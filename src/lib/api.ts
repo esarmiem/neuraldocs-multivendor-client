@@ -64,6 +64,17 @@ export const documentsAPI = {
     return response.data;
   },
   
+  uploadDocument: async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    await api.post('/documents/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  
   clearDatabase: async (): Promise<void> => {
     await api.delete('/documents/database/clear');
   },

@@ -3,8 +3,11 @@ import { AuthProvider } from "@/components/AuthProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NeuralDocs LLM",
-  description: "Chat con IA para consultas de documentos",
+  title: "DELIA - Asistente experto en EDSL",
+  description: "DELIA (Deliver + IA): Asistente experto en EDSL (Experian Domain Specific Language)",
+  icons: {
+    icon: '/experianlogo.webp',
+  },
 };
 
 export default function RootLayout({

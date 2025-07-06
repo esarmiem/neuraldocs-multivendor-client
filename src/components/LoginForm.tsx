@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { authAPI } from '@/lib/api';
 import { useAuth } from './AuthProvider';
-import { Bot, Lock, User } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
@@ -35,14 +36,14 @@ export default function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-[#d91ba2] rounded-full flex items-center justify-center">
-            <Bot className="h-8 w-8 text-white" />
+          <div className="mx-auto h-16 w-16 bg-[#fefefefe] rounded-full flex items-center justify-center">
+            <Image src="/experianlogo.webp" alt="DELIA Logo" width={32} height={32} />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Agente Experian
+            DELIA
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Inicia sesión para hablar con el agente
+            Asistente experto en EDSL (Experian Domain Specific Language)
           </p>
           <p className="mt-2 text-sm text-gray-600">
             Rafael - Oscar - Pipe - Ruben
