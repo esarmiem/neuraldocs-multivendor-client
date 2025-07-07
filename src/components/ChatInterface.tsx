@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Send, User, LogOut, Trash2, Upload, X } from 'lucide-react';
+import { Send, User, LogOut, Trash2, Upload, X, ArrowLeft } from 'lucide-react';
 import { chatAPI, documentsAPI } from '@/lib/api';
 import { useAuth } from './AuthProvider';
 import { processLLMResponse } from '@/utils/textProcessing';
 import TypewriterText from './TypewriterText';
+import { useRouter } from 'next/navigation';
 
 interface Message {
   id: string;
@@ -26,6 +27,7 @@ export default function ChatInterface() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
+  const router = useRouter();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -147,6 +149,13 @@ export default function ChatInterface() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => router.push('/agents')}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              title="Volver a selección de agentes"
+            >
+              <ArrowLeft className="h-5 w-5 text-gray-600" />
+            </button>
             <div className="h-10 w-10 bg-[#fefefefe] rounded-full flex items-center justify-center">
               <Image src="/experianlogo.webp" alt="DELIA Logo" width={20} height={20} />
             </div>

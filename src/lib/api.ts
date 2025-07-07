@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ChatRequest, ChatResponse, TokenResponse, AuthRequest, DocumentStats, Document } from '@/types/api';
+import { ChatRequest, ChatResponse, ChatDeliaRequest, ChatDeliaResponse, TokenResponse, AuthRequest, DocumentStats, Document } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -49,6 +49,11 @@ export const authAPI = {
 export const chatAPI = {
   sendMessage: async (message: ChatRequest): Promise<ChatResponse> => {
     const response = await api.post('/chat', message);
+    return response.data;
+  },
+  
+  sendDeliaMessage: async (message: ChatDeliaRequest): Promise<ChatDeliaResponse> => {
+    const response = await api.post('/chat/delia', message);
     return response.data;
   },
 };
