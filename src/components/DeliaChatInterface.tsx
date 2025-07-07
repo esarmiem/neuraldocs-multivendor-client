@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, LogOut, ChevronDown, Bot, ArrowLeft } from 'lucide-react';
+import { Send, User, LogOut, ChevronDown, Bot, ArrowLeft, Menu } from 'lucide-react';
 import { chatAPI } from '@/lib/api';
 import { useAuth } from './AuthProvider';
 import { processLLMResponse } from '@/utils/textProcessing';
@@ -29,8 +29,10 @@ export default function DeliaChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [userLevel, setUserLevel] = useState<UserLevel>('basic');
   const [isLevelDropdownOpen, setIsLevelDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
   const router = useRouter();
 
@@ -47,6 +49,9 @@ export default function DeliaChatInterface() {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsLevelDropdownOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
       }
     };
 
@@ -127,7 +132,8 @@ export default function DeliaChatInterface() {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-2">
             <button
               onClick={logout}
               className="bg-[#d91ba2] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 font-medium flex items-center space-x-2"
@@ -136,6 +142,35 @@ export default function DeliaChatInterface() {
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
             </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden relative" ref={mobileMenuRef}>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              title="Menú"
+            >
+              <Menu className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            {/* Mobile Menu Dropdown */}
+            {isMobileMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2 text-red-600"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -199,8 +234,8 @@ export default function DeliaChatInterface() {
       {/* Input */}
       <div className="bg-white border-t border-gray-200 p-4">
         <form onSubmit={handleSendMessage} className="flex items-center justify-center space-x-3">
-          {/* Level Selector */}
-          <div className="relative" ref={dropdownRef}>
+          {/* Level Selector - Desktop */}
+          <div className="relative hidden md:block" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
@@ -214,6 +249,38 @@ export default function DeliaChatInterface() {
               <div className="absolute bottom-full left-0 mb-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                 <div className="p-2">
                   <p className="text-xs text-gray-500 mb-2 px-2">Escoge tu nivel de conocimiento</p>
+                  {userLevelOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleLevelSelect(option.value as UserLevel)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 ${
+                        userLevel === option.value ? 'bg-[#d91ba2] text-white hover:bg-[#d91ba2]' : ''
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Level Selector - Mobile */}
+          <div className="relative md:hidden" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition-all duration-200 font-medium flex items-center justify-center"
+              title={`Nivel actual: ${userLevelOptions.find(opt => opt.value === userLevel)?.label}`}
+            >
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isLevelDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isLevelDropdownOpen && (
+              <div className="absolute bottom-full left-0 mb-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                <div className="p-2">
+                  <p className="text-xs text-gray-500 mb-2 px-2">Nivel</p>
                   {userLevelOptions.map((option) => (
                     <button
                       key={option.value}

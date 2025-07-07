@@ -47,8 +47,11 @@ export default function AgentsPage() {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Agente Experian</h2>
-            <p className="text-gray-600 text-center mb-4">
+            <p className="text-gray-600 text-center">
               Asistente especializado en documentación y consultas generales de Experian
+            </p>
+            <p className="text-gray-600 text-center mb-4">
+              Responde sobre cualquier tema
             </p>
             <div className="flex items-center justify-center text-[#652678]">
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -67,8 +70,11 @@ export default function AgentsPage() {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Agente Delia</h2>
+            <p className="text-gray-600 text-center">
+              Asistente especializado en EDSL (Experian Domain Specific Language) 
+            </p>
             <p className="text-gray-600 text-center mb-4">
-              Asistente especializado en EDSL con respuestas adaptadas a tu nivel de conocimiento
+              Respuestas adaptadas a tu nivel de conocimiento
             </p>
             <div className="flex items-center justify-center text-[#d91ba2]">
               <Bot className="h-5 w-5 mr-2" />
