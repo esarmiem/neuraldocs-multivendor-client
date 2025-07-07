@@ -6,8 +6,8 @@ import { Send, User, LogOut, Trash2, Upload, X, ArrowLeft } from 'lucide-react';
 import { chatAPI, documentsAPI } from '@/lib/api';
 import { useAuth } from './AuthProvider';
 import { processLLMResponse } from '@/utils/textProcessing';
-import TypewriterText from './TypewriterText';
 import { useRouter } from 'next/navigation';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface Message {
   id: string;
@@ -160,7 +160,7 @@ export default function ChatInterface() {
               <Image src="/experianlogo.webp" alt="DELIA Logo" width={20} height={20} />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">DELIA</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Agente Experian</h1>
               <p className="text-sm text-gray-500">
                 {stats ? `${stats.total_documents} documentos, ${stats.total_chunks} chunks` : 'Cargando...'}
               </p>
@@ -248,8 +248,8 @@ export default function ChatInterface() {
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
             <Image src="/experianlogo.webp" alt="DELIA Logo" width={64} height={64} className="mx-auto mb-4" />
-            <h3 className="text-lg font-medium">¡Bienvenido a DELIA!</h3>
-            <p className="mt-2">Asistente experto en EDSL (Experian Domain Specific Language). Estoy aquí para ayudarte con todas las preguntas que tengas sobre PowerCurve.</p>
+            <h3 className="text-lg font-medium">¡Bienvenido a Agente Experian!</h3>
+            <p className="mt-2">Estoy aquí para ayudarte con todas las preguntas que tengas sobre PowerCurve y cualquier tema.</p>
           </div>
         )}
         
@@ -273,7 +273,7 @@ export default function ChatInterface() {
                   {message.isUser ? (
                     <div className="whitespace-pre-wrap">{message.content}</div>
                   ) : (
-                    <TypewriterText text={message.content} speed={30} />
+                    <MarkdownRenderer content={message.content} typewriter />
                   )}
                   <div className={`text-xs mt-2 ${
                     message.isUser ? 'text-white/70' : 'text-gray-500'

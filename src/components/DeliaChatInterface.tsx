@@ -5,8 +5,8 @@ import { Send, User, LogOut, ChevronDown, Bot, ArrowLeft } from 'lucide-react';
 import { chatAPI } from '@/lib/api';
 import { useAuth } from './AuthProvider';
 import { processLLMResponse } from '@/utils/textProcessing';
-import TypewriterText from './TypewriterText';
 import { useRouter } from 'next/navigation';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface Message {
   id: string;
@@ -167,7 +167,7 @@ export default function DeliaChatInterface() {
                   <Bot className="h-5 w-5 mt-0.5 flex-shrink-0 text-[#d91ba2]" />
                   <div>
                     <p className="text-sm font-medium mb-1 text-[#d91ba2]">DELIA</p>
-                    <TypewriterText text={message.content} />
+                    <MarkdownRenderer content={message.content} typewriter />
                   </div>
                 </div>
               )}
@@ -198,7 +198,7 @@ export default function DeliaChatInterface() {
 
       {/* Input */}
       <div className="bg-white border-t border-gray-200 p-4">
-        <form onSubmit={handleSendMessage} className="flex items-end space-x-3">
+        <form onSubmit={handleSendMessage} className="flex items-center justify-center space-x-3">
           {/* Level Selector */}
           <div className="relative" ref={dropdownRef}>
             <button
