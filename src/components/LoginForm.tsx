@@ -23,7 +23,7 @@ export default function LoginForm() {
     try {
       const response = await authAPI.login({ username, password });
       login(response.access_token);
-      router.push('/chat');
+      router.push('/agents');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Error de autenticación';
       setError(errorMessage);
@@ -46,8 +46,16 @@ export default function LoginForm() {
             Asistente experto en EDSL (Experian Domain Specific Language)
           </p>
           <p className="mt-2 text-sm text-gray-600">
-            Rafael - Oscar - Pipe - Ruben
-          </p>  
+            by: Rafael Sarmiento
+          </p>  <p className="mt-2 text-sm text-gray-600">
+            Para iniciar sesión en modo prueba, usa:
+          </p>
+          <p className="mt-2 text-sm text-gray-600">
+            usuario: testuser
+          </p>
+          <p className="mt-2 text-sm text-gray-600">
+            contraseña: testpassword
+          </p>
         </div>
         
         <div className="bg-white rounded-lg shadow-md border border-gray-100 p-8">

@@ -10,7 +10,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/chat');
+      router.push('/agents');
     } else {
       router.push('/login');
     }
