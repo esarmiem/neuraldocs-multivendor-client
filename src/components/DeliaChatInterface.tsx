@@ -128,33 +128,33 @@ export default function DeliaChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">DELIA</h1>
-              <p className="text-sm text-gray-500">Asistente especializado en SDS</p>
+              <p className="text-sm text-gray-500">Asistente especializado en EDSL</p>
             </div>
           </div>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-2">
-            <button
+            {/*<button
               onClick={logout}
               className="bg-[#d91ba2] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 font-medium flex items-center space-x-2"
               title="Cerrar sesión"
             >
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
-            </button>
+            </button>*/}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden relative" ref={mobileMenuRef}>
-            <button
+            {/*<button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
               title="Menú"
             >
               <Menu className="h-6 w-6 text-gray-600" />
-            </button>
+            </button> */}
             
-            {/* Mobile Menu Dropdown */}
+            {/* Mobile Menu Dropdown 
             {isMobileMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                 <div className="p-2 space-y-1">
@@ -170,7 +170,7 @@ export default function DeliaChatInterface() {
                   </button>
                 </div>
               </div>
-            )}
+            )}*/}
           </div>
         </div>
       </div>

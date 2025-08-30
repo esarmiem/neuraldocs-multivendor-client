@@ -176,13 +176,13 @@ export default function ChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">Agente Experian</h1>
-              <p className="text-sm text-gray-500">
+              {/*<p className="text-sm text-gray-500">
                 {stats ? `${stats.total_documents} documentos, ${stats.total_chunks} chunks` : 'Cargando...'}
-              </p>
+              </p> */}
             </div>
           </div>
           
-          {/* Desktop Menu */}
+          {/* Desktop Menu 
           <div className="hidden md:flex items-center space-x-2">
             <button
               onClick={handleUploadClick}
@@ -216,19 +216,19 @@ export default function ChatInterface() {
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
           <div className="md:hidden relative" ref={mobileMenuRef}>
-            <button
+            {/*<button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
               title="Menú"
             >
               <Menu className="h-6 w-6 text-gray-600" />
-            </button>
+            </button>*/}
             
-            {/* Mobile Menu Dropdown */}
+            {/* Mobile Menu Dropdown 
             {isMobileMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                 <div className="p-2 space-y-1">
@@ -266,7 +266,7 @@ export default function ChatInterface() {
                   </button>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
