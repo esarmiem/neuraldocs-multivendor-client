@@ -104,6 +104,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
         components={{
+          p: ({ node, children }) => {
+            if (!node) return <p>{children}</p>;
+
+            const significantChildren = node.children.filter(
+              (child) => child.type !== 'text' || child.value.trim() !== ''
+            );
+
+            if (significantChildren.length === 1) {
+              const significantChild = significantChildren[0];
+              if (significantChild.type === 'element' && significantChild.tagName === 'code') {
+                return <>{children}</>;
+              }
+            }
+
+            return <p>{children}</p>;
+          },
           code: CodeBlock,
           strong: ({ children }) => <strong className="text-[#d91ba2] font-semibold">{children}</strong>,
           h3: ({ children }) => <h3 className="text-lg font-bold text-[#652678] mt-4 mb-2">{children}</h3>,
