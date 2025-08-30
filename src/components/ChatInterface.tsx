@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Send, User, LogOut, Trash2, Upload, X, ArrowLeft, Menu } from 'lucide-react';
-import { chatAPI, documentsAPI } from '@/lib/api';
-import { useAuth } from './AuthProvider';
+import { Send, User, X, ArrowLeft } from 'lucide-react';
+import { chatAPI } from '@/lib/api';
 import { processLLMResponse } from '@/utils/textProcessing';
 import { useRouter } from 'next/navigation';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -20,15 +19,8 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState<{ total_documents: number; total_chunks: number } | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const { logout } = useAuth();
   const router = useRouter();
 
   const scrollToBottom = () => {
@@ -38,68 +30,6 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const loadStats = async () => {
-    try {
-      const statsData = await documentsAPI.getStats();
-      setStats(statsData);
-    } catch {
-      console.error('Error loading stats');
-    }
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadError(null);
-    setUploadSuccess(false);
-
-    try {
-      await documentsAPI.uploadDocument(file);
-      setUploadSuccess(true);
-      await loadStats(); // Recargar estadísticas después de subir
-      
-      // Limpiar el input de archivo
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
-      // Ocultar el mensaje de éxito después de 3 segundos
-      setTimeout(() => {
-        setUploadSuccess(false);
-      }, 3000);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Error al subir el documento';
-      setUploadError(errorMessage);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
 
   const clearUploadError = () => {
     setUploadError(null);
@@ -145,19 +75,6 @@ export default function ChatInterface() {
     }
   };
 
-  const handleClearDatabase = async () => {
-    if (confirm('¿Estás seguro de que quieres eliminar todos los documentos? Esta acción no se puede deshacer.')) {
-      try {
-        await documentsAPI.clearDatabase();
-        await loadStats();
-        setMessages([]);
-        alert('Base de datos limpiada exitosamente');
-      } catch {
-        alert('Error al limpiar la base de datos');
-      }
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Header */}
@@ -176,13 +93,13 @@ export default function ChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">Agente Experian</h1>
-              <p className="text-sm text-gray-500">
+              {/*<p className="text-sm text-gray-500">
                 {stats ? `${stats.total_documents} documentos, ${stats.total_chunks} chunks` : 'Cargando...'}
-              </p>
+              </p> */}
             </div>
           </div>
           
-          {/* Desktop Menu */}
+          {/* Desktop Menu 
           <div className="hidden md:flex items-center space-x-2">
             <button
               onClick={handleUploadClick}
@@ -216,57 +133,11 @@ export default function ChatInterface() {
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden relative" ref={mobileMenuRef}>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-              title="Menú"
-            >
-              <Menu className="h-6 w-6 text-gray-600" />
-            </button>
-            
-            {/* Mobile Menu Dropdown */}
-            {isMobileMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <div className="p-2 space-y-1">
-                  <button
-                    onClick={() => {
-                      handleUploadClick();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    disabled={isUploading}
-                    className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Upload className="h-4 w-4" />
-                    <span>{isUploading ? 'Subiendo...' : 'Subir Conocimiento'}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleClearDatabase();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span>Limpiar Base de Datos</span>
-                  </button>
-                  <hr className="my-1" />
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2 text-red-600"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Cerrar Sesión</span>
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="md:hidden relative">
+            {/* Mobile menu removed */}
           </div>
         </div>
       </div>
@@ -291,21 +162,6 @@ export default function ChatInterface() {
             >
               <X className="h-4 w-4" />
             </button>
-          </div>
-        </div>
-      )}
-
-      {uploadSuccess && (
-        <div className="bg-green-50 border-l-4 border-green-400 p-4 mx-6 mt-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="h-5 w-5 text-green-400">✓</div>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-green-700">
-                Documento subido exitosamente
-              </p>
-            </div>
           </div>
         </div>
       )}

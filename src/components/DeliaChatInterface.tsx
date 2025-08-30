@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, LogOut, ChevronDown, Bot, ArrowLeft, Menu } from 'lucide-react';
+import { Send, User, ChevronDown, Bot, ArrowLeft } from 'lucide-react';
 import { chatAPI } from '@/lib/api';
-import { useAuth } from './AuthProvider';
 import { processLLMResponse } from '@/utils/textProcessing';
 import { useRouter } from 'next/navigation';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -29,11 +28,8 @@ export default function DeliaChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [userLevel, setUserLevel] = useState<UserLevel>('basic');
   const [isLevelDropdownOpen, setIsLevelDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const { logout } = useAuth();
   const router = useRouter();
 
   const scrollToBottom = () => {
@@ -49,9 +45,6 @@ export default function DeliaChatInterface() {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsLevelDropdownOpen(false);
-      }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
       }
     };
 
@@ -134,43 +127,19 @@ export default function DeliaChatInterface() {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-2">
-            <button
+            {/*<button
               onClick={logout}
               className="bg-[#d91ba2] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 font-medium flex items-center space-x-2"
               title="Cerrar sesión"
             >
               <LogOut className="h-4 w-4" />
               <span>Cerrar Sesión</span>
-            </button>
+            </button>*/}
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden relative" ref={mobileMenuRef}>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-              title="Menú"
-            >
-              <Menu className="h-6 w-6 text-gray-600" />
-            </button>
-            
-            {/* Mobile Menu Dropdown */}
-            {isMobileMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <div className="p-2 space-y-1">
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2 text-red-600"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Cerrar Sesión</span>
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="md:hidden relative">
+            {/* Mobile menu removed */}
           </div>
         </div>
       </div>

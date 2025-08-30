@@ -51,22 +51,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
     }
 
     return (
-      <div className="my-4 w-full max-w-full">
-        <div className="relative w-full max-w-full">
+      <div className="my-4 w-full">
+        <div className="relative w-full bg-[#f3e8ff] border border-[#d91ba2] rounded-lg overflow-hidden">
           <button
             onClick={() => {
               navigator.clipboard.writeText(code);
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             }}
-            className="absolute top-2 right-2 bg-[#d91ba2] text-white px-2 py-1 rounded flex items-center text-xs hover:bg-[#652678] transition z-10"
-            style={{ maxWidth: '100%' }}
+            className="absolute top-2 right-2 bg-[#d91ba2] text-white px-2 py-1 rounded flex items-center text-xs hover:bg-[#652678] transition z-10 whitespace-nowrap"
           >
-            <Copy className="h-4 w-4 mr-1" />
+            <Copy className="h-4 w-4 mr-1 flex-shrink-0" />
             {copied ? '¡Copiado!' : 'Copiar'}
           </button>
-          <pre className="bg-[#f3e8ff] border border-[#d91ba2] rounded-lg p-4 overflow-x-auto text-sm w-full max-w-full box-border">
-            <code className={className + ' w-full max-w-full box-border'}>{code}</code>
+          <pre className="p-4 text-sm w-full overflow-x-auto">
+            <code className={`${className} w-full break-all whitespace-pre-wrap`}>{code}</code>
           </pre>
         </div>
       </div>
@@ -99,11 +98,27 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
   }, [content, shouldTypewriter]);
 
   return (
-    <div className="prose max-w-full w-full">
+    <div className="prose max-w-full w-full overflow-hidden">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
         components={{
+          p: ({ node, children }) => {
+            if (!node) return <p>{children}</p>;
+
+            const significantChildren = node.children.filter(
+              (child) => child.type !== 'text' || child.value.trim() !== ''
+            );
+
+            if (significantChildren.length === 1) {
+              const significantChild = significantChildren[0];
+              if (significantChild.type === 'element' && significantChild.tagName === 'code') {
+                return <>{children}</>;
+              }
+            }
+
+            return <p className="break-words">{children}</p>;
+          },
           code: CodeBlock,
           strong: ({ children }) => <strong className="text-[#d91ba2] font-semibold">{children}</strong>,
           h3: ({ children }) => <h3 className="text-lg font-bold text-[#652678] mt-4 mb-2">{children}</h3>,
