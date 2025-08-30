@@ -45,9 +45,7 @@ export default function LoginForm() {
           <p className="mt-2 text-sm text-gray-600">
             Asistente experto en EDSL (Experian Domain Specific Language)
           </p>
-          <p className="mt-2 text-sm text-gray-600">
-            by: Rafael Sarmiento
-          </p>  <p className="mt-2 text-sm text-gray-600">
+         <p className="mt-2 text-sm text-gray-600">
             Para iniciar sesión en modo prueba, usa:
           </p>
           <p className="mt-2 text-sm text-gray-600">

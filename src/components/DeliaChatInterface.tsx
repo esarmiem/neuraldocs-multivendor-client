@@ -128,7 +128,7 @@ export default function DeliaChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">DELIA</h1>
-              <p className="text-sm text-gray-500">Asistente especializado en EDSL</p>
+              <p className="text-sm text-gray-500">Asistente especializado en SDS</p>
             </div>
           </div>
           
