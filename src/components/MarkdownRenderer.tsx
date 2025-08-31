@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import { Copy } from 'lucide-react';
+import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import { Copy } from "lucide-react";
 
 interface MarkdownRendererProps {
   content: string;
@@ -18,16 +18,19 @@ interface CodeBlockProps {
 // Preprocesa el markdown para asegurar que los bloques de código estén bien delimitados y no se mezclen con el texto
 function preprocessMarkdown(content: string): string {
   // Corrige casos donde hay triple backtick seguido del lenguaje pero sin salto de línea
-  let fixed = content.replace(/```(\w+)\s+/g, (match, lang) => `\n\`\`\`${lang}\n`);
+  let fixed = content.replace(
+    /```(\w+)\s+/g,
+    (match, lang) => `\n\`\`\`${lang}\n`,
+  );
   // Si hay bloques de código mal cerrados, los cierra
   const openBlocks = (fixed.match(/```/g) || []).length;
   if (openBlocks % 2 !== 0) {
-    fixed += '\n```';
+    fixed += "\n```";
   }
   // Elimina espacios extra antes de los backticks
-  fixed = fixed.replace(/\s*```/g, '\n```');
+  fixed = fixed.replace(/\s*```/g, "\n```");
   // Asegura que los bloques de código estén separados del texto
-  fixed = fixed.replace(/([^\n])\n```/g, '$1\n\n```');
+  fixed = fixed.replace(/([^\n])\n```/g, "$1\n\n```");
   fixed = fixed.replace(/```(\w+)\n([^]*?)```/g, (match, lang, code) => {
     // Quita espacios extra al inicio y final del bloque de código
     return `\n\`\`\`${lang}\n${code.trim()}\n\`\`\``;
@@ -35,19 +38,24 @@ function preprocessMarkdown(content: string): string {
   return fixed;
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter = false }) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
+  content,
+  typewriter = false,
+}) => {
   const [copied, setCopied] = useState(false);
 
   // Detecta si el texto contiene Markdown
   const isPlainText = (text: string) => {
-    return !(/[\n*#`]/.test(text));
+    return !/[\n*#`]/.test(text);
   };
 
   const CodeBlock = ({ inline, className, children }: CodeBlockProps) => {
-    const code = String(children ?? '').replace(/\n$/, '');
+    const code = String(children ?? "").replace(/\n$/, "");
 
     if (inline) {
-      return <code className="bg-[#f3e8ff] text-[#652678] px-1 rounded">{code}</code>;
+      return (
+        <code className="bg-[#f3e8ff] text-[#652678] px-1 rounded">{code}</code>
+      );
     }
 
     return (
@@ -62,10 +70,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
             className="absolute top-2 right-2 bg-[#d91ba2] text-white px-2 py-1 rounded flex items-center text-xs hover:bg-[#652678] transition z-10 whitespace-nowrap"
           >
             <Copy className="h-4 w-4 mr-1 flex-shrink-0" />
-            {copied ? '¡Copiado!' : 'Copiar'}
+            {copied ? "¡Copiado!" : "Copiar"}
           </button>
           <pre className="p-4 text-sm w-full overflow-x-auto">
-            <code className={`${className} w-full break-all whitespace-pre-wrap`}>{code}</code>
+            <code
+              className={`${className} w-full break-all whitespace-pre-wrap`}
+            >
+              {code}
+            </code>
           </pre>
         </div>
       </div>
@@ -74,14 +86,16 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
 
   // Solo animar si es texto plano
   const shouldTypewriter = typewriter && isPlainText(content);
-  const [displayed, setDisplayed] = useState(shouldTypewriter ? '' : preprocessMarkdown(content));
+  const [displayed, setDisplayed] = useState(
+    shouldTypewriter ? "" : preprocessMarkdown(content),
+  );
   React.useEffect(() => {
     if (!shouldTypewriter) {
       setDisplayed(preprocessMarkdown(content));
       return;
     }
     let i = 0;
-    setDisplayed('');
+    setDisplayed("");
     const interval = setInterval(() => {
       setDisplayed((prev) => {
         if (i >= content.length) {
@@ -104,25 +118,43 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
         rehypePlugins={[rehypeHighlight]}
         components={{
           p: ({ node, children }) => {
-            if (!node) return <p>{children}</p>;
+            if (!node) return <p className="break-words">{children}</p>;
 
-            const significantChildren = node.children.filter(
-              (child) => child.type !== 'text' || child.value.trim() !== ''
+            const childrenArray = React.Children.toArray(children);
+            const significantChildren = childrenArray.filter((child) => {
+              if (typeof child === "string") return child.trim() !== "";
+              return true;
+            });
+
+            const hasBlockCode = significantChildren.some(
+              (child) =>
+                React.isValidElement(child) && child.props.inline === false,
             );
 
-            if (significantChildren.length === 1) {
-              const significantChild = significantChildren[0];
-              if (significantChild.type === 'element' && significantChild.tagName === 'code') {
+            if (hasBlockCode) {
+              if (significantChildren.length === 1) {
                 return <>{children}</>;
+              } else {
+                return <div className="break-words">{children}</div>;
               }
             }
 
             return <p className="break-words">{children}</p>;
           },
           code: CodeBlock,
-          strong: ({ children }) => <strong className="text-[#d91ba2] font-semibold">{children}</strong>,
-          h3: ({ children }) => <h3 className="text-lg font-bold text-[#652678] mt-4 mb-2">{children}</h3>,
-          h4: ({ children }) => <h4 className="text-base font-bold text-[#d91ba2] mt-3 mb-1">{children}</h4>,
+          strong: ({ children }) => (
+            <strong className="text-[#d91ba2] font-semibold">{children}</strong>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-lg font-bold text-[#652678] mt-4 mb-2">
+              {children}
+            </h3>
+          ),
+          h4: ({ children }) => (
+            <h4 className="text-base font-bold text-[#d91ba2] mt-3 mb-1">
+              {children}
+            </h4>
+          ),
           li: ({ children }) => <li className="ml-4 list-disc">{children}</li>,
         }}
       >
@@ -132,4 +164,4 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, typewriter
   );
 };
 
-export default MarkdownRenderer; 
+export default MarkdownRenderer;
