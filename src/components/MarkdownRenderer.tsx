@@ -128,7 +128,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
             const hasBlockCode = significantChildren.some(
               (child) =>
-                React.isValidElement(child) && child.props.inline === false,
+                React.isValidElement(child) && (child.props as CodeBlockProps).inline === false,
             );
 
             if (hasBlockCode) {
