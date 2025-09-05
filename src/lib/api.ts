@@ -6,6 +6,7 @@ import {
   ChatDeliaResponse,
   TokenResponse,
   AuthRequest,
+  RegisterRequest,
   DocumentStats,
 } from "@/types/api";
 
@@ -52,6 +53,11 @@ export const authAPI = {
       },
     });
     return response.data;
+  },
+  register: async (payload: RegisterRequest): Promise<void> => {
+    await axios.post(`${API_BASE_URL}/auth/register`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
   },
 };
 
