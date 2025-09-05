@@ -30,6 +30,13 @@ export interface AuthRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  full_name: string;
+  password: string;
+}
+
 export interface DocumentStats {
   total_documents: number;
   total_chunks: number;

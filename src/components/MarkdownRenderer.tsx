@@ -49,8 +49,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     return !/[\n*#`]/.test(text);
   };
 
+  // Extrae texto plano de nodos React (incluyendo spans inyectados por resaltado)
+  const extractText = (node: React.ReactNode): string => {
+    if (node == null) return "";
+    if (typeof node === "string" || typeof node === "number") return String(node);
+    if (Array.isArray(node)) return node.map(extractText).join("");
+    if (React.isValidElement(node)) return extractText((node.props as { children?: React.ReactNode }).children);
+    return "";
+  };
+
   const CodeBlock = ({ inline, className, children }: CodeBlockProps) => {
-    const code = String(children ?? "").replace(/\n$/, "");
+    const code = extractText(children).replace(/\n$/, "");
 
     if (inline) {
       return (
@@ -108,7 +117,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       });
     }, 15);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, shouldTypewriter]);
 
   return (
@@ -121,22 +129,45 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             if (!node) return <p className="break-words">{children}</p>;
 
             const childrenArray = React.Children.toArray(children);
-            const significantChildren = childrenArray.filter((child) => {
-              if (typeof child === "string") return child.trim() !== "";
-              return true;
-            });
 
-            const hasBlockCode = significantChildren.some(
-              (child) =>
-                React.isValidElement(child) && (child.props as CodeBlockProps).inline === false,
-            );
-
-            if (hasBlockCode) {
-              if (significantChildren.length === 1) {
-                return <>{children}</>;
-              } else {
-                return <div className="break-words">{children}</div>;
+            const isBlockTag = (type: unknown): boolean => {
+              if (typeof type === "string") {
+                const blockTags = new Set([
+                  "div",
+                  "pre",
+                  "ol",
+                  "ul",
+                  "table",
+                  "blockquote",
+                  "h1",
+                  "h2",
+                  "h3",
+                  "h4",
+                  "h5",
+                  "h6",
+                  "hr",
+                ]);
+                return blockTags.has(type);
               }
+              // Detect our custom CodeBlock component
+              return type === CodeBlock;
+            };
+
+            const containsBlockDescendant = (nodes: React.ReactNode[]): boolean => {
+              for (const child of nodes) {
+                if (React.isValidElement(child)) {
+                  if (isBlockTag(child.type)) return true;
+                  const childElement = child as React.ReactElement<{ children?: React.ReactNode }>;
+                  const grandChildren = React.Children.toArray(childElement.props?.children ?? []);
+                  if (grandChildren.length > 0 && containsBlockDescendant(grandChildren)) return true;
+                }
+              }
+              return false;
+            };
+
+            if (containsBlockDescendant(childrenArray)) {
+              // Avoid invalid nesting: render as a div wrapper instead of <p>
+              return <div className="break-words">{children}</div>;
             }
 
             return <p className="break-words">{children}</p>;

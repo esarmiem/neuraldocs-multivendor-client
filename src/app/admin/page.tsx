@@ -17,7 +17,7 @@ import LogoutButton from "@/components/LogoutButton";
 import { DocumentStats } from "@/types/api";
 
 export default function AdminPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initialized } = useAuth();
   const router = useRouter();
 
   const [stats, setStats] = useState<DocumentStats | null>(null);
@@ -32,10 +32,11 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!initialized) return;
     if (!isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [initialized, isAuthenticated, router]);
 
   const fetchData = async () => {
     try {
@@ -101,7 +102,7 @@ export default function AdminPage() {
     }
   };
 
-  if (!isAuthenticated) {
+  if (!initialized || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d91ba2]"></div>
